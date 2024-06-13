@@ -32,9 +32,13 @@ const HomePage = () => {
     setLoading(true);
     try {
       const data = await fetchMedications(query);
-      setResults(data.results);
+      const filteredResults = data.results.filter(
+        (result) =>
+          result.openfda.brand_name?.[0] || result.openfda.generic_name?.[0],
+      );
+      setResults(filteredResults);
       localStorage.setItem('searchQuery', query);
-      localStorage.setItem('searchResults', JSON.stringify(data.results));
+      localStorage.setItem('searchResults', JSON.stringify(filteredResults));
       navigate(`/search?query=${query}`);
     } catch (error) {
       console.error('Search error:', error);

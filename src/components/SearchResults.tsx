@@ -22,25 +22,19 @@ const SearchResults = ({ results }) => {
   const totalPages = Math.ceil(filteredResults.length / resultsPerPage);
 
   useEffect(() => {
-    // Filter out results with no brand or generic name
-    const filtered = results.filter(
-      (result) =>
-        result.openfda.brand_name?.[0] || result.openfda.generic_name?.[0],
-    );
-    setFilteredResults(filtered);
-    localStorage.setItem('searchResults', JSON.stringify(filtered));
+    if (results.length === 0) {
+      const cachedResults = localStorage.getItem('searchResults');
+      if (cachedResults) {
+        setFilteredResults(JSON.parse(cachedResults));
+      }
+    } else {
+      setFilteredResults(results);
+    }
   }, [results]);
 
   useEffect(() => {
     applyFilters();
-  }, [filterOption, results]);
-
-  useEffect(() => {
-    const cachedResults = localStorage.getItem('searchResults');
-    if (cachedResults) {
-      setFilteredResults(JSON.parse(cachedResults));
-    }
-  }, []);
+  }, [filterOption]);
 
   const handleChangePage = (event, value) => {
     setPage(value);
