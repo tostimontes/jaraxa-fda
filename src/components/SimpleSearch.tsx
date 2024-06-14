@@ -8,7 +8,7 @@ import {
   Box,
 } from '@mui/material';
 import { useDebounce } from 'use-debounce';
-import axios from 'axios';
+import Fuse from 'fuse.js';
 import { fetchMedications } from '../api/fetchMedications';
 import { useNavigate } from 'react-router-dom';
 

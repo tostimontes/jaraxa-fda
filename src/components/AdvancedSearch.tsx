@@ -33,6 +33,12 @@ const AdvancedSearch = ({ onSearch }) => {
     onSearch(query);
   };
 
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
+
   return (
     <Box component="form" noValidate autoComplete="off">
       <TextField
@@ -41,6 +47,7 @@ const AdvancedSearch = ({ onSearch }) => {
         variant="outlined"
         value={brandName}
         onChange={(e) => setBrandName(e.target.value)}
+        onKeyPress={handleKeyPress}
       />
       <TextField
         fullWidth
@@ -48,6 +55,7 @@ const AdvancedSearch = ({ onSearch }) => {
         variant="outlined"
         value={manufacturerName}
         onChange={(e) => setManufacturerName(e.target.value)}
+        onKeyPress={handleKeyPress}
       />
       <TextField
         fullWidth
@@ -55,6 +63,7 @@ const AdvancedSearch = ({ onSearch }) => {
         variant="outlined"
         value={activeIngredient}
         onChange={(e) => setActiveIngredient(e.target.value)}
+        onKeyPress={handleKeyPress}
       />
       <FormControl fullWidth>
         <InputLabel>Marketing Status</InputLabel>

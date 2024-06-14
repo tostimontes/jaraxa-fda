@@ -11,6 +11,7 @@ import SimpleSearch from '../components/SimpleSearch';
 import AdvancedSearch from '../components/AdvancedSearch';
 import SearchResults from '../components/SearchResults';
 import { fetchMedications } from '../api/fetchMedications';
+import ScrollToTopButton from '../components/ScrollToTopButton';
 
 const HomePage = () => {
   const [isAdvanced, setIsAdvanced] = useState(false);
@@ -81,6 +82,7 @@ const HomePage = () => {
       <Box mt={4}>
         {loading ? <p>Loading...</p> : <SearchResults results={results} />}
       </Box>
+      <ScrollToTopButton />
     </Container>
   );
 };
