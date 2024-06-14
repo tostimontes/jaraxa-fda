@@ -1,12 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, List, ListItem, ListItemText, Button } from '@mui/material';
+import {
+  TextField,
+  List,
+  ListItem,
+  ListItemText,
+  Button,
+  Box,
+} from '@mui/material';
 import { useDebounce } from 'use-debounce';
 import axios from 'axios';
-import Fuse from 'fuse.js';
+import { fetchMedications } from '../api/fetchMedications';
 import { useNavigate } from 'react-router-dom';
 
-const SimpleSearch = ({ onSearch, initialQuery }) => {
-  const [query, setQuery] = useState(initialQuery);
+const SimpleSearch = ({ onSearch, initialQuery, query, setQuery }) => {
   const [debouncedQuery] = useDebounce(query, 300);
   const [suggestions, setSuggestions] = useState([]);
   const navigate = useNavigate();
@@ -18,26 +24,31 @@ const SimpleSearch = ({ onSearch, initialQuery }) => {
   }, [debouncedQuery]);
 
   const fetchSuggestions = async (query) => {
-    const response = await axios.get(
-      `https://api.fda.gov/drug/label.json?search=${query}&limit=10`,
-    );
-    const fuse = new Fuse(response.data.results, {
-      keys: [
-        'openfda.brand_name',
-        'openfda.generic_name',
-        'openfda.manufacturer_name',
-      ],
-    });
-    const filteredSuggestions = fuse
-      .search(query)
-      .map((result) => result.item)
-      .filter((item) => item.openfda.brand_name || item.openfda.generic_name);
-    const uniqueSuggestions = Array.from(
-      new Set(filteredSuggestions.map((a) => a.id)),
-    ).map((id) => {
-      return filteredSuggestions.find((a) => a.id === id);
-    });
-    setSuggestions(uniqueSuggestions);
+    try {
+      const data = await fetchMedications(query);
+      const filteredSuggestions = data.results
+        .filter(
+          (item) =>
+            item.openfda.brand_name?.[0] || item.openfda.generic_name?.[0],
+        )
+        .sort((a, b) => {
+          const aRelevance =
+            (a.openfda.brand_name?.includes(query) ? 1 : 0) +
+            (a.openfda.generic_name?.includes(query) ? 1 : 0);
+          const bRelevance =
+            (b.openfda.brand_name?.includes(query) ? 1 : 0) +
+            (b.openfda.generic_name?.includes(query) ? 1 : 0);
+          return bRelevance - aRelevance;
+        });
+
+      setSuggestions(filteredSuggestions);
+
+      if (filteredSuggestions.length === 0) {
+        setAlternativeSuggestions([]);
+      }
+    } catch (error) {
+      console.error('Search error:', error);
+    }
   };
 
   const handleInputChange = (e) => {
@@ -50,7 +61,9 @@ const SimpleSearch = ({ onSearch, initialQuery }) => {
 
   const handleSearch = () => {
     if (debouncedQuery.length > 2) {
-      onSearch(debouncedQuery);
+      onSearch(
+        `openfda.brand_name:${debouncedQuery}+OR+openfda.generic_name:${debouncedQuery}`,
+      );
       setSuggestions([]);
     } else {
       setSuggestions([]);
@@ -78,27 +91,29 @@ const SimpleSearch = ({ onSearch, initialQuery }) => {
           Search
         </Button>
       </div>
-      <List>
-        {suggestions.length > 0
-          ? suggestions.map((suggestion) => (
-              <ListItem
-                button
-                key={suggestion.id}
-                onClick={() => handleSelect(suggestion.id)}
-              >
-                <ListItemText
-                  primary={suggestion.openfda.brand_name}
-                  secondary={suggestion.openfda.generic_name}
-                />
-              </ListItem>
-            ))
-          : query &&
-            query.length > 2 && (
-              <ListItem>
-                <ListItemText primary="No results found" />
-              </ListItem>
-            )}
-      </List>
+      <Box sx={{ maxHeight: '200px', overflow: 'auto', mt: 2 }}>
+        <List>
+          {suggestions.length > 0
+            ? suggestions.map((suggestion) => (
+                <ListItem
+                  button
+                  key={suggestion.id}
+                  onClick={() => handleSelect(suggestion.id)}
+                >
+                  <ListItemText
+                    primary={`${suggestion.openfda.brand_name?.[0] || ''} (${suggestion.openfda.generic_name?.[0] || ''})`}
+                    secondary={`By ${suggestion.openfda.manufacturer_name?.[0] || 'Unknown'}`}
+                  />
+                </ListItem>
+              ))
+            : query &&
+              query.length > 2 && (
+                <ListItem>
+                  <ListItemText primary="No results found" />
+                </ListItem>
+              )}
+        </List>
+      </Box>
     </div>
   );
 };

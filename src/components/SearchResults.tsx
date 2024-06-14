@@ -16,7 +16,7 @@ const SearchResults = ({ results }) => {
   const location = useLocation();
   const [page, setPage] = useState(1);
   const [resultsPerPage, setResultsPerPage] = useState(10);
-  const [sortOption, setSortOption] = useState('');
+  const [sortOption, setSortOption] = useState('relevance');
   const [filterOption, setFilterOption] = useState('');
   const [filteredResults, setFilteredResults] = useState([]);
   const totalPages = Math.ceil(filteredResults.length / resultsPerPage);
@@ -34,7 +34,7 @@ const SearchResults = ({ results }) => {
 
   useEffect(() => {
     applyFilters();
-  }, [filterOption]);
+  }, [filterOption, results]);
 
   const handleChangePage = (event, value) => {
     setPage(value);
@@ -59,7 +59,9 @@ const SearchResults = ({ results }) => {
 
   const sortResults = (option) => {
     const sortedResults = [...filteredResults];
-    if (option === 'brand_name_asc') {
+    if (option === 'relevance') {
+      sortedResults.sort((a, b) => (a.score || 0) - (b.score || 0));
+    } else if (option === 'brand_name_asc') {
       sortedResults.sort((a, b) =>
         a.openfda.brand_name?.[0].localeCompare(b.openfda.brand_name?.[0]),
       );
@@ -100,6 +102,7 @@ const SearchResults = ({ results }) => {
           <FormControl fullWidth>
             <InputLabel>Sort By</InputLabel>
             <Select value={sortOption} onChange={handleSortChange}>
+              <MenuItem value={'relevance'}>Relevance</MenuItem>
               <MenuItem value={'brand_name_asc'}>
                 Brand Name (Ascending)
               </MenuItem>
@@ -147,8 +150,18 @@ const SearchResults = ({ results }) => {
               <Typography variant="h5" component="div">
                 {result.openfda.brand_name?.[0]}
               </Typography>
-              <Typography variant="body2" color="textSecondary">
+              <Typography variant="body1" color="textSecondary">
                 {result.openfda.generic_name?.[0]}
+              </Typography>
+              <Typography variant="body1" color="green">
+                {result.openfda.manufacturer_name?.[0]}
+              </Typography>
+              <Typography variant="body2" color="textSecondary">
+                Status: {result.openfda.product_type?.[0] || 'N/A'}
+              </Typography>
+              <Typography variant="body2" color="textSecondary">
+                Relevance:{' '}
+                {result.score !== undefined ? result.score.toFixed(2) : 'N/A'}
               </Typography>
               <Link to={`/details/${result.id}`}>View Details</Link>
             </CardContent>
@@ -161,5 +174,7 @@ const SearchResults = ({ results }) => {
     </div>
   );
 };
+
+// TODO: relevancia
 
 export default SearchResults;

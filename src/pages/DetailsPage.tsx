@@ -33,11 +33,7 @@ const DetailsPage = () => {
   return (
     <Card className="m-4">
       <CardContent>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => navigate(-1)}
-        >
+        <Button variant="contained" onClick={() => navigate(-1)}>
           Back
         </Button>
         <Typography variant="h4" component="div">
@@ -46,8 +42,21 @@ const DetailsPage = () => {
         <Typography variant="body1" component="div">
           {medication.openfda.generic_name?.[0]}
         </Typography>
-        {medication.indications_and_usage && (
+        <Typography variant="body1" component="div">
+          Status: {medication.marketing_status || 'Unknown'}
+        </Typography>
+        {medication.description && (
           <Accordion defaultExpanded>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography variant="h6">Description</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Typography variant="body2">{medication.description}</Typography>
+            </AccordionDetails>
+          </Accordion>
+        )}
+        {medication.indications_and_usage && (
+          <Accordion>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Typography variant="h6">Indications and Usage</Typography>
             </AccordionSummary>
@@ -76,6 +85,66 @@ const DetailsPage = () => {
             <AccordionDetails>
               <Typography variant="body2">
                 {medication.adverse_reactions}
+              </Typography>
+            </AccordionDetails>
+          </Accordion>
+        )}
+        {medication.drug_interactions && (
+          <Accordion>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography variant="h6">Drug Interactions</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Typography variant="body2">
+                {medication.drug_interactions}
+              </Typography>
+            </AccordionDetails>
+          </Accordion>
+        )}
+        {medication.pharmacodynamics && (
+          <Accordion>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography variant="h6">Pharmacodynamics</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Typography variant="body2">
+                {medication.pharmacodynamics}
+              </Typography>
+            </AccordionDetails>
+          </Accordion>
+        )}
+        {medication.pharmacokinetics && (
+          <Accordion>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography variant="h6">Pharmacokinetics</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Typography variant="body2">
+                {medication.pharmacokinetics}
+              </Typography>
+            </AccordionDetails>
+          </Accordion>
+        )}
+        {medication.spl_product_data_elements && (
+          <Accordion>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography variant="h6">SPL Product Data Elements</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Typography variant="body2">
+                {medication.spl_product_data_elements}
+              </Typography>
+            </AccordionDetails>
+          </Accordion>
+        )}
+        {medication.adverse_reaction_table && (
+          <Accordion>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography variant="h6">Adverse Reaction Table</Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Typography variant="body2">
+                {medication.adverse_reaction_table}
               </Typography>
             </AccordionDetails>
           </Accordion>

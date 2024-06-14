@@ -10,12 +10,13 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import SimpleSearch from '../components/SimpleSearch';
 import AdvancedSearch from '../components/AdvancedSearch';
 import SearchResults from '../components/SearchResults';
-import { fetchMedications } from '../api/openFDA';
+import { fetchMedications } from '../api/fetchMedications';
 
 const HomePage = () => {
   const [isAdvanced, setIsAdvanced] = useState(false);
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [query, setQuery] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -26,7 +27,8 @@ const HomePage = () => {
     if (cachedResults) {
       setResults(JSON.parse(cachedResults));
     }
-  }, []);
+    setQuery('');
+  }, [location.search]);
 
   const handleSearch = async (query) => {
     setLoading(true);
@@ -39,12 +41,20 @@ const HomePage = () => {
       setResults(filteredResults);
       localStorage.setItem('searchQuery', query);
       localStorage.setItem('searchResults', JSON.stringify(filteredResults));
-      navigate(`/search?query=${query}`);
+      // navigate(`/search?query=${query}`);
     } catch (error) {
       console.error('Search error:', error);
     } finally {
       setLoading(false);
     }
+    setQuery('');
+  };
+
+  const handleToggleSearchMode = () => {
+    setIsAdvanced(!isAdvanced);
+    setResults([]);
+    localStorage.removeItem('searchResults');
+    localStorage.removeItem('searchQuery');
   };
 
   return (
@@ -54,17 +64,19 @@ const HomePage = () => {
       </Typography>
       <FormControlLabel
         control={
-          <Switch
-            checked={isAdvanced}
-            onChange={() => setIsAdvanced(!isAdvanced)}
-          />
+          <Switch checked={isAdvanced} onChange={handleToggleSearchMode} />
         }
         label="Advanced Search"
       />
       {isAdvanced ? (
         <AdvancedSearch onSearch={handleSearch} />
       ) : (
-        <SimpleSearch onSearch={handleSearch} initialQuery={initialQuery} />
+        <SimpleSearch
+          onSearch={handleSearch}
+          initialQuery={initialQuery}
+          query={query}
+          setQuery={setQuery}
+        />
       )}
       <Box mt={4}>
         {loading ? <p>Loading...</p> : <SearchResults results={results} />}
