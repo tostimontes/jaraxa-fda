@@ -1,51 +1,54 @@
 import React, { useState } from 'react';
 import {
   TextField,
-  FormControl,
-  InputLabel,
+  Button,
   Select,
   MenuItem,
-  Button,
+  FormControl,
+  InputLabel,
+  Box,
 } from '@mui/material';
 
 const AdvancedSearch = ({ onSearch }) => {
-  const [drugName, setDrugName] = useState('');
-  const [manufacturer, setManufacturer] = useState('');
-  const [drugClass, setDrugClass] = useState('');
+  const [brandName, setBrandName] = useState('');
+  const [manufacturerName, setManufacturerName] = useState('');
   const [activeIngredient, setActiveIngredient] = useState('');
+  const [marketingStatus, setMarketingStatus] = useState('');
 
   const handleSearch = () => {
-    const query =
-      `${drugName} ${manufacturer} ${drugClass} ${activeIngredient}`.trim();
+    const queryParts = [];
+    if (brandName) {
+      queryParts.push(`openfda.brand_name:${brandName}`);
+    }
+    if (manufacturerName) {
+      queryParts.push(`openfda.manufacturer_name:${manufacturerName}`);
+    }
+    if (activeIngredient) {
+      queryParts.push(`openfda.substance_name:${activeIngredient}`);
+    }
+    if (marketingStatus) {
+      queryParts.push(`openfda.product_type:"HUMAN+${marketingStatus}+DRUG"`);
+    }
+    const query = queryParts.join('+AND+');
     onSearch(query);
   };
 
   return (
-    <div>
+    <Box component="form" noValidate autoComplete="off">
       <TextField
         fullWidth
-        label="Drug Name"
+        label="Brand Name"
         variant="outlined"
-        value={drugName}
-        onChange={(e) => setDrugName(e.target.value)}
+        value={brandName}
+        onChange={(e) => setBrandName(e.target.value)}
       />
       <TextField
         fullWidth
-        label="Manufacturer"
+        label="Manufacturer Name"
         variant="outlined"
-        value={manufacturer}
-        onChange={(e) => setManufacturer(e.target.value)}
+        value={manufacturerName}
+        onChange={(e) => setManufacturerName(e.target.value)}
       />
-      <FormControl fullWidth>
-        <InputLabel>Drug Class</InputLabel>
-        <Select
-          value={drugClass}
-          onChange={(e) => setDrugClass(e.target.value)}
-        >
-          <MenuItem value={'class1'}>Class 1</MenuItem>
-          <MenuItem value={'class2'}>Class 2</MenuItem>
-        </Select>
-      </FormControl>
       <TextField
         fullWidth
         label="Active Ingredient"
@@ -53,11 +56,24 @@ const AdvancedSearch = ({ onSearch }) => {
         value={activeIngredient}
         onChange={(e) => setActiveIngredient(e.target.value)}
       />
+      <FormControl fullWidth>
+        <InputLabel>Marketing Status</InputLabel>
+        <Select
+          value={marketingStatus}
+          onChange={(e) => setMarketingStatus(e.target.value)}
+        >
+          <MenuItem value="">Any</MenuItem>
+          <MenuItem value="PRESCRIPTION">Prescription</MenuItem>
+          <MenuItem value="OTC">OTC</MenuItem>
+        </Select>
+      </FormControl>
       <Button variant="contained" color="primary" onClick={handleSearch}>
         Search
       </Button>
-    </div>
+    </Box>
   );
 };
 
 export default AdvancedSearch;
+
+// TODO: no matches found trigger alternative suggestions
