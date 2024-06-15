@@ -9,10 +9,13 @@ import {
   InputLabel,
   Pagination,
   Box,
+  List,
+  ListItem,
+  ListItemText,
 } from '@mui/material';
 import { Link, useLocation } from 'react-router-dom';
 
-const SearchResults = ({ results }) => {
+const SearchResults = ({ results, spellingSuggestions, onSearch }) => {
   const location = useLocation();
   const [page, setPage] = useState(1);
   const [resultsPerPage, setResultsPerPage] = useState(10);
@@ -77,6 +80,10 @@ const SearchResults = ({ results }) => {
       );
     }
     setFilteredResults(sortedResults);
+  };
+
+  const handleSearch = (query) => {
+    onSearch(query);
   };
 
   const applyFilters = () => {
@@ -157,15 +164,36 @@ const SearchResults = ({ results }) => {
                 {result.openfda.product_type?.[0] === 'HUMAN PRESCRIPTION DRUG'
                   ? 'Status: Prescription'
                   : result.openfda.product_type?.[0] === 'HUMAN OTC DRUG'
-                  ? 'Status: OTC'
-                  : 'Status: N/A'}
+                    ? 'Status: OTC'
+                    : 'Status: N/A'}
               </Typography>
               <Link to={`/details/${result.id}`}>View Details</Link>
             </CardContent>
           </Card>
         ))}
-      {filteredResults.length === 0 && (
-        <Typography variant="body1">No results found</Typography>
+      {(filteredResults.length === 0 || !filteredResults) && (
+        <Box>
+          {spellingSuggestions.length > 0 ? (
+            <List>
+              <ListItem>
+                <ListItemText primary="Did you mean:" />
+              </ListItem>
+              {spellingSuggestions.map((suggestion, index) => (
+                <ListItem
+                  button
+                  key={index}
+                  onClick={() => handleSearch(suggestion)}
+                >
+                  <ListItemText primary={suggestion} />
+                </ListItem>
+              ))}
+            </List>
+          ) : (
+            <Typography variant="body1">
+              No suggestions found, try with a different word
+            </Typography>
+          )}
+        </Box>
       )}
       <Pagination count={totalPages} page={page} onChange={handleChangePage} />
     </div>

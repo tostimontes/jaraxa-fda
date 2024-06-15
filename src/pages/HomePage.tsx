@@ -20,6 +20,7 @@ const HomePage = () => {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [query, setQuery] = useState('');
+  const [spellingSuggestions, setSpellingSuggestions] = useState([]);
   const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -35,17 +36,28 @@ const HomePage = () => {
 
   const handleSearch = async (query) => {
     setLoading(true);
+    sessionStorage.removeItem('searchResults');
+    sessionStorage.removeItem('searchQuery');
     try {
-      const data = await fetchMedications(query);
-      const filteredResults = data.results.filter(
-        (result) =>
-          result.openfda.brand_name?.[0] || result.openfda.generic_name?.[0],
-      );
+      const constructedQuery = `openfda.brand_name:${query}+OR+openfda.generic_name:${query}`;
+      const response = await fetchMedications(constructedQuery);
+
+      if (response.results && response.results.length > 0) {
+        const filteredResults = response.results.filter(
+          (result) =>
+            result.openfda.brand_name?.[0] || result.openfda.generic_name?.[0],
+        );
         setResults(filteredResults);
-      sessionStorage.setItem('searchQuery', query);
-      sessionStorage.setItem('searchResults', JSON.stringify(filteredResults));
+      } else {
+        const corrections = await getSuggestionsFromRxNorm(query);
+
+        setSpellingSuggestions(corrections);
+      }
     } catch (error) {
       console.error('Search error:', error);
+      const corrections = await getSuggestionsFromRxNorm(query);
+      setSpellingSuggestions(corrections);
+      setResults([]);
     } finally {
       setLoading(false);
     }
@@ -87,7 +99,11 @@ const HomePage = () => {
             <Box ml={2}>Loading...</Box>
           </Box>
         ) : (
-          <SearchResults results={results} />
+          <SearchResults
+            results={results}
+            onSearch={handleSearch}
+            spellingSuggestions={spellingSuggestions}
+          />
         )}
       </Box>
       <ScrollToTopButton />

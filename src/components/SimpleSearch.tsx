@@ -53,7 +53,9 @@ const SimpleSearch = ({ onSearch, initialQuery, query, setQuery }) => {
       }
     } catch (error) {
       console.error('Search error:', error);
+      console.log(`Query in simple search: ${query}`);
       const corrections = await getSuggestionsFromRxNorm(query);
+      console.log(`Suggestions from SimpleSearch: ${corrections}`);
       setNoResults(true);
       setSpellingSuggestions(corrections);
     }
@@ -75,9 +77,7 @@ const SimpleSearch = ({ onSearch, initialQuery, query, setQuery }) => {
 
   const handleSearch = () => {
     if (debouncedQuery.length > 2) {
-      onSearch(
-        `openfda.brand_name:${debouncedQuery}+OR+openfda.generic_name:${debouncedQuery}`,
-      );
+      onSearch(debouncedQuery);
       setSuggestions([]);
       setSpellingSuggestions([]);
     } else {

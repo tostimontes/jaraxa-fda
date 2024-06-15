@@ -27,3 +27,4 @@ template.md
 example-response.json
 drugsfda_reference.pdf
 .env
+logCleanup.cjs
