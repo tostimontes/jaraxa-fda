@@ -54,7 +54,11 @@ const DetailsPage = () => {
             {medication.openfda.generic_name?.[0]}
           </Typography>
           <Typography variant="body1" component="div">
-            Status: {medication.marketing_status || 'Unknown'}
+            {medication.openfda.product_type?.[0] === 'HUMAN PRESCRIPTION DRUG'
+              ? 'Status: Prescription'
+              : medication.openfda.product_type?.[0] === 'HUMAN OTC DRUG'
+                ? 'Status: OTC'
+                : 'Status: N/A'}
           </Typography>
           {medication.description && (
             <Accordion defaultExpanded>

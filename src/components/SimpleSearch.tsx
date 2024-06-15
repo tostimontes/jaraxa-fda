@@ -1,18 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import {
-  TextField,
   List,
   ListItem,
   ListItemText,
   Button,
   Box,
-  Link,
   CircularProgress,
 } from '@mui/material';
 import { useDebounce } from 'use-debounce';
 import { useNavigate } from 'react-router-dom';
 import { fetchMedications } from '../api/fetchMedications';
 import { getSuggestionsFromRxNorm } from '../api/rxnormApi';
+import HistoryDropdown from './HistoryDropdown';
 
 const SimpleSearch = ({ onSearch, initialQuery, query, setQuery }) => {
   const [debouncedQuery] = useDebounce(query, 300);
@@ -23,7 +22,7 @@ const SimpleSearch = ({ onSearch, initialQuery, query, setQuery }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (debouncedQuery.length > 2) {
+    if (debouncedQuery && debouncedQuery.length > 2) {
       fetchSuggestions(debouncedQuery);
     } else {
       setSuggestions([]);
@@ -53,18 +52,18 @@ const SimpleSearch = ({ onSearch, initialQuery, query, setQuery }) => {
       }
     } catch (error) {
       console.error('Search error:', error);
-      console.log(`Query in simple search: ${query}`);
+      
       const corrections = await getSuggestionsFromRxNorm(query);
-      console.log(`Suggestions from SimpleSearch: ${corrections}`);
+      
       setNoResults(true);
       setSpellingSuggestions(corrections);
     }
     setLoading(false);
   };
 
-  const handleInputChange = (e) => {
-    setQuery(e.target.value);
-    if (e.target.value === '') {
+  const handleInputChange = (newValue) => {
+    setQuery(newValue);
+    if (newValue === '') {
       setSuggestions([]);
       setNoResults(false);
       setSpellingSuggestions([]);
@@ -75,11 +74,21 @@ const SimpleSearch = ({ onSearch, initialQuery, query, setQuery }) => {
     navigate(`/details/${id}`);
   };
 
+  const addSearchToHistory = (searchTerm) => {
+    const storedHistory =
+      JSON.parse(localStorage.getItem('searchHistory')) || [];
+    if (!storedHistory.includes(searchTerm)) {
+      const updatedHistory = [searchTerm, ...storedHistory.slice(0, 9)];
+      localStorage.setItem('searchHistory', JSON.stringify(updatedHistory));
+    }
+  };
+
   const handleSearch = () => {
     if (debouncedQuery.length > 2) {
       onSearch(debouncedQuery, 'simple');
       setSuggestions([]);
       setSpellingSuggestions([]);
+      addSearchToHistory(debouncedQuery);
     } else {
       setSuggestions([]);
       setSpellingSuggestions([]);
@@ -101,12 +110,10 @@ const SimpleSearch = ({ onSearch, initialQuery, query, setQuery }) => {
   return (
     <div>
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-        <TextField
-          fullWidth
-          label="Search Medications"
-          variant="outlined"
+        <HistoryDropdown
           value={query}
           onChange={handleInputChange}
+          label="Search Medications"
           onKeyPress={handleKeyPress}
         />
         <Button variant="contained" color="primary" onClick={handleSearch}>

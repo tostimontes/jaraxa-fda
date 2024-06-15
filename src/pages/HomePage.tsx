@@ -34,21 +34,18 @@ const HomePage = () => {
     setQuery('');
   }, [location.search]);
 
-  const handleSearch = async (query, mode) => {
+  const handleSearch = async (query, mode = 'simple') => {
     setLoading(true);
     sessionStorage.removeItem('searchResults');
     sessionStorage.removeItem('searchQuery');
     try {
       let constructedQuery;
-      console.log(mode);
 
       if (mode === 'simple') {
         constructedQuery = `openfda.brand_name:${query}+OR+openfda.generic_name:${query}`;
       } else {
-        console.log(`Query in advanced search: ${query}`);
         constructedQuery = query;
       }
-      console.log(constructedQuery);
 
       const response = await fetchMedications(constructedQuery);
 
@@ -58,15 +55,22 @@ const HomePage = () => {
             result.openfda.brand_name?.[0] || result.openfda.generic_name?.[0],
         );
         setResults(filteredResults);
+
+        // ! TO RESEARCH: limiting the number of results to store avoided the crash after "DOMException: Failed to execute 'setItem' on 'Storage': Setting the value of 'searchResults' exceeded the quota."
+
+        const topResults = filteredResults.slice(0, 20);
+        sessionStorage.setItem('searchResults', JSON.stringify(topResults));
       } else {
         const corrections = await getSuggestionsFromRxNorm(query);
-
         setSpellingSuggestions(corrections);
+        sessionStorage.removeItem('searchResults');
       }
     } catch (error) {
       console.error('Search error:', error);
       const corrections = await getSuggestionsFromRxNorm(query);
       setSpellingSuggestions(corrections);
+      sessionStorage.removeItem('searchResults');
+
       setResults([]);
     } finally {
       setLoading(false);
