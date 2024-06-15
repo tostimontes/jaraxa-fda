@@ -24,7 +24,7 @@ const HomePage = () => {
   const initialQuery = queryParams.get('query') || '';
 
   useEffect(() => {
-    const cachedResults = localStorage.getItem('searchResults');
+    const cachedResults = sessionStorage.getItem('searchResults');
     if (cachedResults) {
       setResults(JSON.parse(cachedResults));
     }
@@ -40,8 +40,8 @@ const HomePage = () => {
           result.openfda.brand_name?.[0] || result.openfda.generic_name?.[0],
       );
       setResults(filteredResults);
-      localStorage.setItem('searchQuery', query);
-      localStorage.setItem('searchResults', JSON.stringify(filteredResults));
+      sessionStorage.setItem('searchQuery', query);
+      sessionStorage.setItem('searchResults', JSON.stringify(filteredResults));
       // navigate(`/search?query=${query}`);
     } catch (error) {
       console.error('Search error:', error);
@@ -54,8 +54,8 @@ const HomePage = () => {
   const handleToggleSearchMode = () => {
     setIsAdvanced(!isAdvanced);
     setResults([]);
-    localStorage.removeItem('searchResults');
-    localStorage.removeItem('searchQuery');
+    sessionStorage.removeItem('searchResults');
+    sessionStorage.removeItem('searchQuery');
   };
 
   return (
