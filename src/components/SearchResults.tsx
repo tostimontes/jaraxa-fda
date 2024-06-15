@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 import { Link, useLocation } from 'react-router-dom';
 
-const SearchResults = ({ results, spellingSuggestions, onSearch }) => {
+const SearchResults = ({ results, spellingSuggestions, onSearch, mode }) => {
   const location = useLocation();
   const [page, setPage] = useState(1);
   const [resultsPerPage, setResultsPerPage] = useState(10);
@@ -171,30 +171,37 @@ const SearchResults = ({ results, spellingSuggestions, onSearch }) => {
             </CardContent>
           </Card>
         ))}
-      {(filteredResults.length === 0 || !filteredResults) && (
-        <Box>
-          {spellingSuggestions.length > 0 ? (
-            <List>
-              <ListItem>
-                <ListItemText primary="Did you mean:" />
-              </ListItem>
-              {spellingSuggestions.map((suggestion, index) => (
-                <ListItem
-                  button
-                  key={index}
-                  onClick={() => handleSearch(suggestion)}
-                >
-                  <ListItemText primary={suggestion} />
+      {(filteredResults.length === 0 || !filteredResults) &&
+        mode === 'advanced' && (
+          <Box>
+            <Typography variant="body1">No results found</Typography>
+          </Box>
+        )}
+      {(filteredResults.length === 0 || !filteredResults) &&
+        mode === 'simple' && (
+          <Box>
+            {spellingSuggestions.length > 0 ? (
+              <List>
+                <ListItem>
+                  <ListItemText primary="Did you mean:" />
                 </ListItem>
-              ))}
-            </List>
-          ) : (
-            <Typography variant="body1">
-              No suggestions found, try with a different word
-            </Typography>
-          )}
-        </Box>
-      )}
+                {spellingSuggestions.map((suggestion, index) => (
+                  <ListItem
+                    button
+                    key={index}
+                    onClick={() => handleSearch(suggestion)}
+                  >
+                    <ListItemText primary={suggestion} />
+                  </ListItem>
+                ))}
+              </List>
+            ) : (
+              <Typography variant="body1">
+                No suggestions found, try with a different word
+              </Typography>
+            )}
+          </Box>
+        )}
       <Pagination count={totalPages} page={page} onChange={handleChangePage} />
     </div>
   );

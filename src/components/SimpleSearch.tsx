@@ -77,7 +77,7 @@ const SimpleSearch = ({ onSearch, initialQuery, query, setQuery }) => {
 
   const handleSearch = () => {
     if (debouncedQuery.length > 2) {
-      onSearch(debouncedQuery);
+      onSearch(debouncedQuery, 'simple');
       setSuggestions([]);
       setSpellingSuggestions([]);
     } else {

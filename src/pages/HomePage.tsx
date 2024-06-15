@@ -34,12 +34,22 @@ const HomePage = () => {
     setQuery('');
   }, [location.search]);
 
-  const handleSearch = async (query) => {
+  const handleSearch = async (query, mode) => {
     setLoading(true);
     sessionStorage.removeItem('searchResults');
     sessionStorage.removeItem('searchQuery');
     try {
-      const constructedQuery = `openfda.brand_name:${query}+OR+openfda.generic_name:${query}`;
+      let constructedQuery;
+      console.log(mode);
+
+      if (mode === 'simple') {
+        constructedQuery = `openfda.brand_name:${query}+OR+openfda.generic_name:${query}`;
+      } else {
+        console.log(`Query in advanced search: ${query}`);
+        constructedQuery = query;
+      }
+      console.log(constructedQuery);
+
       const response = await fetchMedications(constructedQuery);
 
       if (response.results && response.results.length > 0) {
@@ -103,6 +113,7 @@ const HomePage = () => {
             results={results}
             onSearch={handleSearch}
             spellingSuggestions={spellingSuggestions}
+            mode={isAdvanced ? 'advanced' : 'simple'}
           />
         )}
       </Box>

@@ -30,7 +30,7 @@ const AdvancedSearch = ({ onSearch }) => {
       queryParts.push(`openfda.product_type:"HUMAN+${marketingStatus}+DRUG"`);
     }
     const query = queryParts.join('+AND+');
-    onSearch(query);
+    onSearch(query, 'advanced');
   };
 
   const handleKeyPress = (e) => {
