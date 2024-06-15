@@ -10,6 +10,8 @@ import {
   AccordionDetails,
   Button,
   Container,
+  Box,
+  CircularProgress,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ScrollToTopButton from '../components/ScrollToTopButton';
@@ -30,7 +32,13 @@ const DetailsPage = () => {
     fetchData();
   }, [id]);
 
-  if (!medication) return <div>Loading...</div>;
+  if (!medication)
+    return (
+      <Box display="flex" alignItems="center">
+        <CircularProgress />
+        <Box ml={2}>Loading...</Box>
+      </Box>
+    );
 
   return (
     <Container>

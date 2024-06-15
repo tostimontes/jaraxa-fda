@@ -6,53 +6,67 @@ import {
   ListItemText,
   Button,
   Box,
+  Link,
+  CircularProgress,
 } from '@mui/material';
 import { useDebounce } from 'use-debounce';
-import Fuse from 'fuse.js';
-import { fetchMedications } from '../api/fetchMedications';
 import { useNavigate } from 'react-router-dom';
+import { fetchMedications } from '../api/fetchMedications';
+import { getSuggestionsFromRxNorm } from '../api/rxnormApi';
 
 const SimpleSearch = ({ onSearch, initialQuery, query, setQuery }) => {
   const [debouncedQuery] = useDebounce(query, 300);
   const [suggestions, setSuggestions] = useState([]);
+  const [noResults, setNoResults] = useState(false);
+  const [spellingSuggestions, setSpellingSuggestions] = useState([]);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     if (debouncedQuery.length > 2) {
       fetchSuggestions(debouncedQuery);
+    } else {
+      setSuggestions([]);
+      setNoResults(false);
+      setSpellingSuggestions([]);
     }
   }, [debouncedQuery]);
 
   const fetchSuggestions = async (query) => {
+    setLoading(true);
     try {
-      const data = await fetchMedications(query);
-      const filteredSuggestions = data.results
-        .filter(
-          (item) =>
-            item.openfda.brand_name?.[0] || item.openfda.generic_name?.[0],
-        )
-        .sort((a, b) => {
-          const aRelevance =
-            (a.openfda.brand_name?.includes(query) ? 1 : 0) +
-            (a.openfda.generic_name?.includes(query) ? 1 : 0);
-          const bRelevance =
-            (b.openfda.brand_name?.includes(query) ? 1 : 0) +
-            (b.openfda.generic_name?.includes(query) ? 1 : 0);
-          return bRelevance - aRelevance;
-        });
+      const constructedQuery = `openfda.brand_name:${query}+OR+openfda.generic_name:${query}`;
+      const response = await fetchMedications(constructedQuery);
 
-      setSuggestions(filteredSuggestions);
-
-      if (filteredSuggestions.length === 0) {
-        setAlternativeSuggestions([]);
+      if (response.results && response.results.length > 0) {
+        const filteredResults = response.results.filter(
+          (result) =>
+            result.openfda.brand_name?.[0] || result.openfda.generic_name?.[0],
+        );
+        setSuggestions(filteredResults);
+        setNoResults(false);
+        setSpellingSuggestions([]);
+      } else {
+        const corrections = await getSuggestionsFromRxNorm(query);
+        setNoResults(true);
+        setSpellingSuggestions(corrections);
       }
     } catch (error) {
       console.error('Search error:', error);
+      const corrections = await getSuggestionsFromRxNorm(query);
+      setNoResults(true);
+      setSpellingSuggestions(corrections);
     }
+    setLoading(false);
   };
 
   const handleInputChange = (e) => {
     setQuery(e.target.value);
+    if (e.target.value === '') {
+      setSuggestions([]);
+      setNoResults(false);
+      setSpellingSuggestions([]);
+    }
   };
 
   const handleSelect = (id) => {
@@ -65,8 +79,10 @@ const SimpleSearch = ({ onSearch, initialQuery, query, setQuery }) => {
         `openfda.brand_name:${debouncedQuery}+OR+openfda.generic_name:${debouncedQuery}`,
       );
       setSuggestions([]);
+      setSpellingSuggestions([]);
     } else {
       setSuggestions([]);
+      setSpellingSuggestions([]);
     }
   };
 
@@ -74,6 +90,12 @@ const SimpleSearch = ({ onSearch, initialQuery, query, setQuery }) => {
     if (e.key === 'Enter') {
       handleSearch();
     }
+  };
+
+  const handleSpellingSuggestionClick = (suggestion) => {
+    onSearch(
+      `openfda.brand_name:${suggestion}+OR+openfda.generic_name:${suggestion}`,
+    );
   };
 
   return (
@@ -92,9 +114,20 @@ const SimpleSearch = ({ onSearch, initialQuery, query, setQuery }) => {
         </Button>
       </div>
       <Box sx={{ maxHeight: '200px', overflow: 'auto', mt: 2 }}>
-        <List>
-          {suggestions.length > 0
-            ? suggestions.map((suggestion) => (
+        {loading ? (
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            mt={2}
+          >
+            <CircularProgress />
+            <Box ml={2}>Generating suggestions...</Box>
+          </Box>
+        ) : (
+          <List>
+            {suggestions.length > 0 ? (
+              suggestions.map((suggestion) => (
                 <ListItem
                   button
                   key={suggestion.id}
@@ -106,13 +139,37 @@ const SimpleSearch = ({ onSearch, initialQuery, query, setQuery }) => {
                   />
                 </ListItem>
               ))
-            : query &&
+            ) : noResults ? (
+              <>
+                <ListItem>
+                  <ListItemText
+                    primary={
+                      spellingSuggestions.length > 0
+                        ? 'No results found. Did you mean:'
+                        : 'No suggestions found. Try with a different name'
+                    }
+                  />
+                </ListItem>
+                {spellingSuggestions.map((suggestion, index) => (
+                  <ListItem
+                    button
+                    key={index}
+                    onClick={() => handleSpellingSuggestionClick(suggestion)}
+                  >
+                    <ListItemText primary={suggestion} />
+                  </ListItem>
+                ))}
+              </>
+            ) : (
+              query &&
               query.length > 2 && (
                 <ListItem>
                   <ListItemText primary="No results found" />
                 </ListItem>
-              )}
-        </List>
+              )
+            )}
+          </List>
+        )}
       </Box>
     </div>
   );
