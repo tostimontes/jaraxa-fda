@@ -93,7 +93,7 @@ const DetailsPage = () => {
       >
         <CardContent
           sx={{
-            textAlign: { xs: 'center', sm: 'center', md: 'left' },
+            textAlign: 'left',
             display: 'flex',
             flexDirection: 'column',
             gap: 0.5,
