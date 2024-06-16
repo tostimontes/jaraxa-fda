@@ -14,6 +14,7 @@ const lightTheme = createTheme({
     },
     background: {
       default: '#d9d9d9',
+      light: '#f0f0f0',
       navbar: '#8f8f8f',
       paper: '#ffffff',
     },
@@ -37,6 +38,7 @@ const darkTheme = createTheme({
     },
     background: {
       default: '#121212',
+      light: '#363636',
       navbar: '#131313',
       paper: '#1e1e1e',
     },

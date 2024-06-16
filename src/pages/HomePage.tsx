@@ -116,12 +116,19 @@ const HomePage = () => {
           gutterBottom
           sx={{
             fontSize: { xs: '2rem', sm: '3rem', md: '4rem' },
+            fontWeight: { xs: 'bold', sm: 'bold', md: 'normal' },
           }}
         >
           Jaraxa FDA Search
         </Typography>
       </Box>
-      <Container>
+      <Container
+        sx={{
+          width: '100%',
+          maxWidth: { xs: '100%', sm: '100%', md: '75%', xl: '50%' },
+          mx: 'auto',
+        }}
+      >
         <FormControlLabel
           control={
             <Switch checked={isAdvanced} onChange={handleToggleSearchMode} />
@@ -140,7 +147,10 @@ const HomePage = () => {
         )}
         <Box mt={4} sx={{ bgcolor: 'background.default' }}>
           {loading ? (
-            <Box display="flex" alignItems="center">
+            <Box
+              display="flex"
+              alignItems="center"
+            >
               <CircularProgress />
               <Box ml={2}>Loading...</Box>
             </Box>

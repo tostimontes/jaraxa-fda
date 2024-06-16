@@ -103,8 +103,22 @@ const SearchResults = ({ results, spellingSuggestions, onSearch, mode }) => {
   return (
     <div>
       {results.length > 0 && (
-        <Box mb={2}>
-          <FormControl fullWidth>
+        <Box
+          mb={2}
+          sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column', sm: 'row' },
+            gap: 2,
+          }}
+        >
+          <FormControl
+            fullWidth
+            sx={{
+              flex: { sm: 4 },
+              backgroundColor: 'background.light',
+              borderRadius: '4px',
+            }}
+          >
             <InputLabel>Sort By</InputLabel>
             <Select value={sortOption} onChange={handleSortChange}>
               <MenuItem value={'brand_name_asc'}>
@@ -121,7 +135,14 @@ const SearchResults = ({ results, spellingSuggestions, onSearch, mode }) => {
               </MenuItem>
             </Select>
           </FormControl>
-          <FormControl fullWidth>
+          <FormControl
+            fullWidth
+            sx={{
+              flex: { sm: 8 },
+              backgroundColor: 'background.light',
+              borderRadius: '4px',
+            }}
+          >
             <InputLabel>Filter By Manufacturer</InputLabel>
             <Select value={filterOption} onChange={handleFilterChange}>
               <MenuItem value={'all'}>All Manufacturers</MenuItem>
@@ -132,7 +153,14 @@ const SearchResults = ({ results, spellingSuggestions, onSearch, mode }) => {
               ))}
             </Select>
           </FormControl>
-          <FormControl fullWidth>
+          <FormControl
+            fullWidth
+            sx={{
+              flex: { sm: 2 },
+              backgroundColor: 'background.light',
+              borderRadius: '4px',
+            }}
+          >
             <InputLabel>Results Per Page</InputLabel>
             <Select
               value={resultsPerPage}

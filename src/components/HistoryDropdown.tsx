@@ -28,6 +28,10 @@ const HistoryDropdown = ({ value, onChange, label, onKeyPress }) => {
           label={label}
           variant="outlined"
           onKeyPress={onKeyPress}
+          sx={{
+            backgroundColor: 'background.paper',
+            borderRadius: '4px',
+          }}
         />
       )}
     />

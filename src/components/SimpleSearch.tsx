@@ -52,9 +52,9 @@ const SimpleSearch = ({ onSearch, initialQuery, query, setQuery }) => {
       }
     } catch (error) {
       console.error('Search error:', error);
-      
+
       const corrections = await getSuggestionsFromRxNorm(query);
-      
+
       setNoResults(true);
       setSpellingSuggestions(corrections);
     }
@@ -120,7 +120,13 @@ const SimpleSearch = ({ onSearch, initialQuery, query, setQuery }) => {
           Search
         </Button>
       </div>
-      <Box sx={{ maxHeight: '200px', overflow: 'auto', mt: 2 }}>
+      <Box
+        sx={{
+          maxHeight: '200px',
+          overflow: 'auto',
+          backgroundColor: 'background.light',
+        }}
+      >
         {loading ? (
           <Box
             display="flex"
@@ -128,11 +134,11 @@ const SimpleSearch = ({ onSearch, initialQuery, query, setQuery }) => {
             justifyContent="center"
             mt={2}
           >
-            <CircularProgress />
-            <Box ml={2}>Generating suggestions...</Box>
+            <CircularProgress size={24} />
+            <Box display={'flex'} ml={2} mb={2}>Generating suggestions...</Box>
           </Box>
         ) : (
-          <List>
+          <List sx={suggestions.length === 0 && { pt: 0, pb: 0 }}>
             {suggestions.length > 0 ? (
               suggestions.map((suggestion) => (
                 <ListItem
