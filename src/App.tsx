@@ -1,11 +1,19 @@
 import React, { useState } from 'react';
-import { ThemeProvider, CssBaseline, Button, Box, IconButton } from '@mui/material';
+import {
+  ThemeProvider,
+  CssBaseline,
+  Button,
+  Box,
+  IconButton,
+  Container,
+} from '@mui/material';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { lightTheme, darkTheme } from './styles/theme';
 import HomePage from './pages/HomePage';
 import DetailsPage from './pages/DetailsPage';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Footer from './components/Footer';
 
 const App = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -40,11 +48,14 @@ const App = () => {
         </IconButton>
       </Box>
       <Router>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/search" element={<HomePage />} />
-          <Route path="/details/:id" element={<DetailsPage />} />
-        </Routes>
+        <Container disableGutters sx={{ m: 0, p: 0 }}>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/search" element={<HomePage />} />
+            <Route path="/details/:id" element={<DetailsPage />} />
+          </Routes>
+          <Footer />
+        </Container>
       </Router>
     </ThemeProvider>
   );

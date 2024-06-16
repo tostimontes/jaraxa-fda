@@ -119,6 +119,7 @@ const HomePage = () => {
             fontSize: { xs: '2rem', sm: '3rem', md: '4rem' },
             fontWeight: { xs: 'bold', sm: 'bold', md: 'normal' },
             marginY: { xs: 2, sm: 2, md: 0 },
+            textShadow: '1px 1px 1px rgba(0, 0, 0, 0.5)',
           }}
         >
           Jaraxa FDA Search

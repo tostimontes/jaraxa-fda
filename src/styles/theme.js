@@ -5,6 +5,7 @@ const lightTheme = createTheme({
     mode: 'light',
     primary: {
       main: '#81c8f8',
+      link: '#3eadf7',
     },
     secondary: {
       main: '#ffab91',
@@ -51,11 +52,11 @@ const darkTheme = createTheme({
       paper: '#1e1e1e',
     },
     otc: {
-      main: '#66bb6a', // Lighter green for dark mode
+      main: '#66bb6a',
       contrastText: '#000000',
     },
     prescription: {
-      main: '#ef5350', // Lighter red for dark mode
+      main: '#ef5350',
       contrastText: '#ffffff',
     },
   },
