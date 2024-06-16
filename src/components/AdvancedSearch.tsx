@@ -40,7 +40,17 @@ const AdvancedSearch = ({ onSearch }) => {
   };
 
   return (
-    <Box component="form" noValidate autoComplete="off">
+    <Box
+      component="form"
+      noValidate
+      autoComplete="off"
+      mb={2}
+      sx={{
+        display: 'flex',
+        flexDirection: { xs: 'column', sm: 'row' },
+        gap: 2,
+      }}
+    >
       <TextField
         fullWidth
         label="Brand Name"
@@ -48,6 +58,11 @@ const AdvancedSearch = ({ onSearch }) => {
         value={brandName}
         onChange={(e) => setBrandName(e.target.value)}
         onKeyPress={handleKeyPress}
+        sx={{
+          flex: { sm: 4 },
+          backgroundColor: 'background.light',
+          borderRadius: '4px',
+        }}
       />
       <TextField
         fullWidth
@@ -56,6 +71,11 @@ const AdvancedSearch = ({ onSearch }) => {
         value={manufacturerName}
         onChange={(e) => setManufacturerName(e.target.value)}
         onKeyPress={handleKeyPress}
+        sx={{
+          flex: { sm: 4 },
+          backgroundColor: 'background.light',
+          borderRadius: '4px',
+        }}
       />
       <TextField
         fullWidth
@@ -64,8 +84,20 @@ const AdvancedSearch = ({ onSearch }) => {
         value={activeIngredient}
         onChange={(e) => setActiveIngredient(e.target.value)}
         onKeyPress={handleKeyPress}
+        sx={{
+          flex: { sm: 4 },
+          backgroundColor: 'background.light',
+          borderRadius: '4px',
+        }}
       />
-      <FormControl fullWidth>
+      <FormControl
+        fullWidth
+        sx={{
+          flex: { sm: 3.5 },
+          backgroundColor: 'background.light',
+          borderRadius: '4px',
+        }}
+      >
         <InputLabel>Marketing Status</InputLabel>
         <Select
           value={marketingStatus}

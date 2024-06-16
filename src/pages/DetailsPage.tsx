@@ -34,31 +34,92 @@ const DetailsPage = () => {
 
   if (!medication)
     return (
-      <Box display="flex" alignItems="center">
-        <CircularProgress />
-        <Box ml={2}>Loading...</Box>
+      <Box
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        height="100vh"
+      >
+        <Box display="flex" alignItems="center">
+          <CircularProgress size={40} />
+          <Box ml={2}>Loading...</Box>
+        </Box>
       </Box>
     );
 
   return (
     <Container>
-      <Card className="m-4">
-        <CardContent>
-          <Button variant="contained" onClick={() => navigate(-1)}>
-            Back
-          </Button>
+      <Box
+        sx={{
+          position: 'fixed',
+          top: { xs: 20, sm: 20, md: 0, lg: 0, xl: 0 },
+          right: { xs: 16, sm: 16, md: 72, lg: 72, xl: 72 },
+          mt: { xs: 6, sm: 6, md: 2, lg: 2, xl: 2 },
+          zIndex: 1300,
+        }}
+      >
+        <Button variant="contained" onClick={() => navigate(-1)} size="large">
+          Back
+        </Button>
+      </Box>
+
+      <Card
+        sx={{
+          mt: { xs: 16, sm: 16, md: 2, lg: 2, xl: 2 },
+          width: '100%',
+          maxWidth: { xs: '100%', sm: '100%', md: '75%' },
+          mx: 'auto',
+        }}
+      >
+        <CardContent
+          sx={{
+            textAlign: { xs: 'center', sm: 'center', md: 'left' },
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 0.5,
+          }}
+        >
           <Typography variant="h4" component="div">
             {medication.openfda.brand_name?.[0]}
           </Typography>
-          <Typography variant="body1" component="div">
+          <Typography
+            variant="body1"
+            component="div"
+            sx={{
+              fontWeight: 'bold',
+              fontSize: '1.2rem',
+              letterSpacing: '2px',
+              fontStyle: 'italic',
+            }}
+          >
             {medication.openfda.generic_name?.[0]}
           </Typography>
-          <Typography variant="body1" component="div">
+          <Typography variant="h6" component="div" color="secondary">
+            by {medication.openfda.manufacturer_name?.[0]}
+          </Typography>
+          <Typography
+            variant="body1"
+            component="div"
+            sx={{
+              fontWeight: 'bold',
+              fontSize: '1.2rem',
+              color:
+                medication.openfda.product_type?.[0] === 'HUMAN OTC DRUG'
+                  ? 'otc.main'
+                  : medication.openfda.product_type?.[0] ===
+                      'HUMAN PRESCRIPTION DRUG'
+                    ? 'prescription.main'
+                    : 'secondary',
+            }}
+          >
+            <Box component="span" sx={{ color: 'text.primary' }}>
+              Status:{' '}
+            </Box>
             {medication.openfda.product_type?.[0] === 'HUMAN PRESCRIPTION DRUG'
-              ? 'Status: Prescription'
+              ? 'Prescription'
               : medication.openfda.product_type?.[0] === 'HUMAN OTC DRUG'
-                ? 'Status: OTC'
-                : 'Status: N/A'}
+                ? 'OTC'
+                : 'N/A'}
           </Typography>
           {medication.description && (
             <Accordion defaultExpanded>

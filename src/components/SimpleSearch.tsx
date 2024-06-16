@@ -6,6 +6,7 @@ import {
   Button,
   Box,
   CircularProgress,
+  Typography,
 } from '@mui/material';
 import { useDebounce } from 'use-debounce';
 import { useNavigate } from 'react-router-dom';
@@ -135,7 +136,9 @@ const SimpleSearch = ({ onSearch, initialQuery, query, setQuery }) => {
             mt={2}
           >
             <CircularProgress size={24} />
-            <Box display={'flex'} ml={2} mb={2}>Generating suggestions...</Box>
+            <Box display={'flex'} ml={2} mb={2}>
+              Generating suggestions...
+            </Box>
           </Box>
         ) : (
           <List sx={suggestions.length === 0 && { pt: 0, pb: 0 }}>
@@ -147,7 +150,17 @@ const SimpleSearch = ({ onSearch, initialQuery, query, setQuery }) => {
                   onClick={() => handleSelect(suggestion.id)}
                 >
                   <ListItemText
-                    primary={`${suggestion.openfda.brand_name?.[0] || ''} (${suggestion.openfda.generic_name?.[0] || ''})`}
+                    primary={
+                      <span>
+                        {suggestion.openfda.brand_name?.[0] || ''}{' '}
+                        <Typography
+                          component="span"
+                          sx={{ fontStyle: 'italic' }}
+                        >
+                          ({suggestion.openfda.generic_name?.[0] || ''})
+                        </Typography>
+                      </span>
+                    }
                     secondary={`By ${suggestion.openfda.manufacturer_name?.[0] || 'Unknown'}`}
                   />
                 </ListItem>

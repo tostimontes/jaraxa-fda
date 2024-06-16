@@ -16,7 +16,15 @@ const lightTheme = createTheme({
       default: '#d9d9d9',
       light: '#f0f0f0',
       navbar: '#8f8f8f',
-      paper: '#ffffff',
+      paper: '#fcfcfc',
+    },
+    otc: {
+      main: '#4caf50',
+      contrastText: '#ffffff',
+    },
+    prescription: {
+      main: '#f44336',
+      contrastText: '#ffffff',
     },
   },
   typography: {
@@ -41,6 +49,14 @@ const darkTheme = createTheme({
       light: '#363636',
       navbar: '#131313',
       paper: '#1e1e1e',
+    },
+    otc: {
+      main: '#66bb6a', // Lighter green for dark mode
+      contrastText: '#000000',
+    },
+    prescription: {
+      main: '#ef5350', // Lighter red for dark mode
+      contrastText: '#ffffff',
     },
   },
   typography: {

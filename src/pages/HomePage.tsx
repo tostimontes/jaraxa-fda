@@ -106,8 +106,9 @@ const HomePage = () => {
           backgroundColor: scrolled ? 'background.navbar' : 'transparent',
           boxShadow: scrolled ? 1 : 0,
           transition: 'all 0.3s ease-in-out',
-          py: scrolled ? 2 : 4,
+          py: scrolled ? 0.5 : 4,
           textAlign: 'center',
+          marginY: 0,
         }}
       >
         <Typography
@@ -117,6 +118,7 @@ const HomePage = () => {
           sx={{
             fontSize: { xs: '2rem', sm: '3rem', md: '4rem' },
             fontWeight: { xs: 'bold', sm: 'bold', md: 'normal' },
+            marginY: { xs: 2, sm: 2, md: 0 },
           }}
         >
           Jaraxa FDA Search

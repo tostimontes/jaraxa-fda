@@ -182,18 +182,39 @@ const SearchResults = ({ results, spellingSuggestions, onSearch, mode }) => {
               <Typography variant="h5" component="div">
                 {result.openfda.brand_name?.[0]}
               </Typography>
-              <Typography variant="body1" color="textSecondary">
+              <Typography
+                variant="body1"
+                color="textSecondary"
+                sx={{ fontStyle: 'italic' }}
+              >
                 {result.openfda.generic_name?.[0]}
               </Typography>
-              <Typography variant="body1" color="primary">
+              <Typography variant="body1" color="secondary">
                 {result.openfda.manufacturer_name?.[0]}
               </Typography>
-              <Typography variant="body2" color="textSecondary">
+              <Typography
+                variant="body1"
+                component="div"
+                sx={{
+                  fontWeight: 'bold',
+                  fontSize: '1rem',
+                  color:
+                    result.openfda.product_type?.[0] === 'HUMAN OTC DRUG'
+                      ? 'otc.main'
+                      : result.openfda.product_type?.[0] ===
+                          'HUMAN PRESCRIPTION DRUG'
+                        ? 'prescription.main'
+                        : 'secondary',
+                }}
+              >
+                <Box component="span" sx={{ color: 'text.primary' }}>
+                  Status:{' '}
+                </Box>
                 {result.openfda.product_type?.[0] === 'HUMAN PRESCRIPTION DRUG'
-                  ? 'Status: Prescription'
+                  ? 'Prescription'
                   : result.openfda.product_type?.[0] === 'HUMAN OTC DRUG'
-                    ? 'Status: OTC'
-                    : 'Status: N/A'}
+                    ? 'OTC'
+                    : 'N/A'}
               </Typography>
               <Link to={`/details/${result.id}`}>View Details</Link>
             </CardContent>
@@ -230,7 +251,12 @@ const SearchResults = ({ results, spellingSuggestions, onSearch, mode }) => {
             )}
           </Box>
         )}
-      <Pagination count={totalPages} page={page} onChange={handleChangePage} />
+      <Pagination
+        count={totalPages}
+        page={page}
+        onChange={handleChangePage}
+        sx={{ mb: 2 }}
+      />
     </div>
   );
 };
