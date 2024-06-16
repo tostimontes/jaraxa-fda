@@ -12,16 +12,34 @@ import { useDebounce } from 'use-debounce';
 import { useNavigate } from 'react-router-dom';
 import { fetchMedications } from '../api/fetchMedications';
 import { getSuggestionsFromRxNorm } from '../api/rxnormApi';
-import { useToggle } from '../utils/ToggleContext';
 import HistoryDropdown from './HistoryDropdown';
 
-const SimpleSearch = ({ onSearch, initialQuery, query, setQuery }) => {
+interface SimpleSearchProps {
+  onSearch: (query: string, mode?: string) => void;
+  initialQuery?: string;
+  query: string;
+  setQuery: (query: string) => void;
+}
+
+const SimpleSearch: React.FC<SimpleSearchProps> = ({
+  onSearch,
+  query,
+  setQuery,
+}) => {
   const [debouncedQuery] = useDebounce(query, 300);
-  const [suggestions, setSuggestions] = useState([]);
+  const [suggestions, setSuggestions] = useState<any[]>([]);
   const [noResults, setNoResults] = useState(false);
   const [spellingSuggestions, setSpellingSuggestions] = useState([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [history, setHistory] = useState<string[]>([]);
+
+  useEffect(() => {
+    const storedHistory = JSON.parse(
+      localStorage.getItem('searchHistory') || '[]',
+    );
+    setHistory(storedHistory);
+  }, []);
 
   useEffect(() => {
     if (debouncedQuery && debouncedQuery.length > 2) {
@@ -33,7 +51,7 @@ const SimpleSearch = ({ onSearch, initialQuery, query, setQuery }) => {
     }
   }, [debouncedQuery]);
 
-  const fetchSuggestions = async (query) => {
+  const fetchSuggestions = async (query: string) => {
     setLoading(true);
     try {
       const constructedQuery = `openfda.brand_name:${query}+OR+openfda.generic_name:${query}`;
@@ -41,7 +59,7 @@ const SimpleSearch = ({ onSearch, initialQuery, query, setQuery }) => {
 
       if (response.results && response.results.length > 0) {
         const filteredResults = response.results.filter(
-          (result) =>
+          (result: any) =>
             result.openfda.brand_name?.[0] || result.openfda.generic_name?.[0],
         );
         setSuggestions(filteredResults);
@@ -63,7 +81,7 @@ const SimpleSearch = ({ onSearch, initialQuery, query, setQuery }) => {
     setLoading(false);
   };
 
-  const handleInputChange = (newValue) => {
+  const handleInputChange = (newValue: string) => {
     setQuery(newValue);
     if (newValue === '') {
       setSuggestions([]);
@@ -72,13 +90,14 @@ const SimpleSearch = ({ onSearch, initialQuery, query, setQuery }) => {
     }
   };
 
-  const handleSelect = (id) => {
+  const handleSelect = (id: string) => {
     navigate(`/details/${id}`);
   };
 
-  const addSearchToHistory = (searchTerm) => {
-    const storedHistory =
-      JSON.parse(localStorage.getItem('searchHistory')) || [];
+  const addSearchToHistory = (searchTerm: string) => {
+    const storedHistory = JSON.parse(
+      localStorage.getItem('searchHistory') || '[]',
+    );
     if (!storedHistory.includes(searchTerm)) {
       const updatedHistory = [searchTerm, ...storedHistory.slice(0, 9)];
       localStorage.setItem('searchHistory', JSON.stringify(updatedHistory));
@@ -97,13 +116,13 @@ const SimpleSearch = ({ onSearch, initialQuery, query, setQuery }) => {
     }
   };
 
-  const handleKeyPress = (e) => {
+  const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       handleSearch();
     }
   };
 
-  const handleSpellingSuggestionClick = (suggestion) => {
+  const handleSpellingSuggestionClick = (suggestion: string) => {
     onSearch(
       `openfda.brand_name:${suggestion}+OR+openfda.generic_name:${suggestion}`,
     );
@@ -120,6 +139,7 @@ const SimpleSearch = ({ onSearch, initialQuery, query, setQuery }) => {
           onChange={handleInputChange}
           label="Search Medications"
           onKeyPress={handleKeyPress}
+          options={history}
         />
         <Button variant="contained" color="primary" onClick={handleSearch}>
           Search
@@ -145,7 +165,7 @@ const SimpleSearch = ({ onSearch, initialQuery, query, setQuery }) => {
             </Box>
           </Box>
         ) : (
-          <List sx={suggestions.length === 0 && { pt: 0, pb: 0 }}>
+          <List sx={suggestions.length === 0 ? { pt: 0, pb: 0 } : undefined}>
             {suggestions.length > 0 ? (
               suggestions.map((suggestion) => (
                 <ListItem

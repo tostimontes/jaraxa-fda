@@ -16,10 +16,30 @@ import {
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ScrollToTopButton from '../components/ScrollToTopButton';
 
+interface Medication {
+  id: string;
+  openfda: {
+    brand_name?: string[];
+    generic_name?: string[];
+    manufacturer_name?: string[];
+    product_type?: string[];
+  };
+  description?: string;
+  indications_and_usage?: string;
+  warnings?: string;
+  adverse_reactions?: string;
+  drug_interactions?: string;
+  pharmacodynamics?: string;
+  pharmacokinetics?: string;
+  spl_product_data_elements?: string;
+  adverse_reaction_table?: string;
+  dosage_and_administration?: string;
+  contraindications?: string;
+}
 const DetailsPage = () => {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [medication, setMedication] = useState(null);
+  const [medication, setMedication] = useState<Medication | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {

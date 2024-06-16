@@ -1,27 +1,28 @@
-import { useState, useEffect } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 
-const HistoryDropdown = ({ value, onChange, label, onKeyPress }) => {
-  const [history, setHistory] = useState([]);
+interface HistoryDropdownProps {
+  value: string;
+  onChange: (newValue: string) => void;
+  label: string;
+  onKeyPress: (event: React.KeyboardEvent<HTMLInputElement>) => void;
+  options: string[];
+}
 
-  useEffect(() => {
-    const storedHistory =
-      JSON.parse(localStorage.getItem('searchHistory')) || [];
-    setHistory(storedHistory);
-  }, []);
-
-  const handleInputChange = (event, newValue) => {
-    onChange(newValue);
-  };
-
+const HistoryDropdown: React.FC<HistoryDropdownProps> = ({
+  value,
+  onChange,
+  label,
+  onKeyPress,
+  options,
+}) => {
   return (
     <Autocomplete
       freeSolo
       fullWidth
       value={value}
-      onChange={(event, newValue) => handleInputChange(event, newValue)}
-      onInputChange={(event, newValue) => handleInputChange(event, newValue)}
-      options={history}
+      onChange={(_, newValue) => onChange(newValue as string)}
+      onInputChange={(_, newValue) => onChange(newValue as string)}
+      options={options}
       renderInput={(params) => (
         <TextField
           {...params}

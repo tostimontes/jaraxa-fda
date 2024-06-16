@@ -1,4 +1,4 @@
-import  { useState, useEffect } from 'react';
+import { useState, useEffect, FC, ReactNode } from 'react';
 import {
   Card,
   CardContent,
@@ -12,15 +12,44 @@ import {
   List,
   ListItem,
   ListItemText,
+  SelectChangeEvent,
 } from '@mui/material';
 import { Link } from 'react-router-dom';
 
-const SearchResults = ({ results, spellingSuggestions, onSearch, mode }) => {
+interface Medication {
+  id: string;
+  openfda: {
+    brand_name?: string[];
+    generic_name?: string[];
+    manufacturer_name?: string[];
+    product_type?: string[];
+  };
+}
+
+interface SearchResultsProps {
+  results: Medication[];
+  spellingSuggestions: string[];
+  onSearch: (query: string) => void;
+  mode: string;
+}
+
+interface StyledLinkProps {
+  to: string;
+  children: ReactNode;
+}
+const SearchResults: React.FC<SearchResultsProps> = ({
+  results,
+  spellingSuggestions,
+  onSearch,
+  mode,
+}) => {
   const [page, setPage] = useState(1);
   const [resultsPerPage, setResultsPerPage] = useState(10);
   const [sortOption, setSortOption] = useState('brand_name_asc');
   const [filterOption, setFilterOption] = useState('');
-  const [filteredResults, setFilteredResults] = useState([]);
+  const [filteredResults, setFilteredResults] = useState<Medication[]>(
+    results || [],
+  );
   const totalPages = Math.ceil(filteredResults.length / resultsPerPage);
 
   useEffect(() => {
@@ -38,66 +67,97 @@ const SearchResults = ({ results, spellingSuggestions, onSearch, mode }) => {
     applyFilters();
   }, [filterOption, results]);
 
-  const handleChangePage = (event, value) => {
+  const handleChangePage = (
+    _event: React.ChangeEvent<unknown>,
+    value: number,
+  ) => {
     setPage(value);
   };
 
-  const handleSortChange = (event) => {
-    const value = event.target.value;
+  const handleSortChange = (event: SelectChangeEvent<string>) => {
+    const value = event.target.value as string;
     setSortOption(value);
     sortResults(value);
   };
 
-  const handleFilterChange = (event) => {
-    const value = event.target.value;
+  const handleFilterChange = (event: SelectChangeEvent<string>) => {
+    const value = event.target.value as string;
     setFilterOption(value);
     applyFilters(value);
   };
 
-  const handleResultsPerPageChange = (event) => {
-    setResultsPerPage(event.target.value);
+  const handleResultsPerPageChange = (event: SelectChangeEvent<number>) => {
+    const value = event.target.value as number;
+    setResultsPerPage(value);
     setPage(1);
   };
 
-  const sortResults = (option) => {
-    const sortedResults = [...filteredResults];
-    if (option === 'brand_name_asc') {
-      sortedResults.sort((a, b) =>
-        a.openfda.brand_name?.[0].localeCompare(b.openfda.brand_name?.[0]),
-      );
-    } else if (option === 'brand_name_desc') {
-      sortedResults.sort((a, b) =>
-        b.openfda.brand_name?.[0].localeCompare(a.openfda.brand_name?.[0]),
-      );
-    } else if (option === 'generic_name_asc') {
-      sortedResults.sort((a, b) =>
-        a.openfda.generic_name?.[0].localeCompare(b.openfda.generic_name?.[0]),
-      );
-    } else if (option === 'generic_name_desc') {
-      sortedResults.sort((a, b) =>
-        b.openfda.generic_name?.[0].localeCompare(a.openfda.generic_name?.[0]),
-      );
-    }
+  const sortResults = (option: string) => {
+    const sortedResults = [...filteredResults].sort((a, b) => {
+      if (option === 'brand_name_asc') {
+        return (
+          a.openfda.brand_name?.[0]?.localeCompare(
+            b.openfda.brand_name?.[0] || '',
+          ) || 0
+        );
+      } else if (option === 'brand_name_desc') {
+        return (
+          b.openfda.brand_name?.[0]?.localeCompare(
+            a.openfda.brand_name?.[0] || '',
+          ) || 0
+        );
+      } else if (option === 'generic_name_asc') {
+        return (
+          a.openfda.generic_name?.[0]?.localeCompare(
+            b.openfda.generic_name?.[0] || '',
+          ) || 0
+        );
+      } else if (option === 'generic_name_desc') {
+        return (
+          b.openfda.generic_name?.[0]?.localeCompare(
+            a.openfda.generic_name?.[0] || '',
+          ) || 0
+        );
+      }
+      return 0;
+    });
     setFilteredResults(sortedResults);
   };
 
-  const handleSearch = (query) => {
+  const handleSearch = (query: string) => {
     onSearch(query);
   };
 
-  const applyFilters = () => {
+  const applyFilters = (value?: string) => {
     let newFilteredResults = results;
-    if (filterOption && filterOption !== 'all') {
+    if (value && value !== 'all') {
       newFilteredResults = results.filter((result) =>
-        result.openfda.manufacturer_name?.includes(filterOption),
+        result.openfda.manufacturer_name?.includes(value),
       );
     }
     setFilteredResults(newFilteredResults);
   };
-
   const uniqueManufacturers = Array.from(
     new Set(results.map((result) => result.openfda.manufacturer_name?.[0])),
   );
+
+  const StyledLink: FC<StyledLinkProps> = ({ to, children }) => {
+    return (
+      <Box
+        component={Link}
+        to={to}
+        sx={{
+          textDecoration: 'none',
+          color: 'inherit',
+          '&:hover': {
+            color: 'primary.main',
+          },
+        }}
+      >
+        {children}
+      </Box>
+    );
+  };
 
   return (
     <div>
@@ -176,7 +236,7 @@ const SearchResults = ({ results, spellingSuggestions, onSearch, mode }) => {
       {filteredResults
         .slice((page - 1) * resultsPerPage, page * resultsPerPage)
         .map((result) => (
-          <Card key={result.id} className="mb-4">
+          <Card key={result.id} sx={{ mb: 2 }}>
             <CardContent>
               <Typography variant="h5" component="div">
                 {result.openfda.brand_name?.[0]}
@@ -215,7 +275,7 @@ const SearchResults = ({ results, spellingSuggestions, onSearch, mode }) => {
                     ? 'OTC'
                     : 'N/A'}
               </Typography>
-              <Link to={`/details/${result.id}`}>View Details</Link>
+              <StyledLink to={`/details/${result.id}`}>View Details</StyledLink>
             </CardContent>
           </Card>
         ))}

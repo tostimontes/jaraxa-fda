@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   ThemeProvider,
   CssBaseline,
@@ -19,6 +19,10 @@ import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import Footer from './components/Footer';
 import { ToggleProvider, useToggle } from './utils/ToggleContext';
 
+interface AppContentProps {
+  toggleTheme: () => void;
+  isDarkMode: boolean;
+}
 const App = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
 
@@ -28,7 +32,7 @@ const App = () => {
 
   return (
     <ToggleProvider>
-      <ThemeProvider theme={isDarkMode ? lightTheme : darkTheme}>
+      <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
         <CssBaseline />
         <AppContent toggleTheme={toggleTheme} isDarkMode={isDarkMode} />
       </ThemeProvider>
@@ -36,8 +40,8 @@ const App = () => {
   );
 };
 
-const AppContent = ({ toggleTheme, isDarkMode }) => {
-  const { toggleAdvancedSearch, setAdvancedSearch, setSimpleSearch } =
+const AppContent: React.FC<AppContentProps> = ({ toggleTheme, isDarkMode }) => {
+  const { setSimpleSearch } =
     useToggle();
 
   const showTour = () => {
@@ -85,7 +89,7 @@ const AppContent = ({ toggleTheme, isDarkMode }) => {
         <HelpOutlineIcon />
       </Button>
       <Router>
-        <Container disableGutters sx={{ m: 0, p: 0 }}>
+        <Container disableGutters maxWidth={false} sx={{ m: 0, p: 0 }}>
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/search" element={<HomePage />} />

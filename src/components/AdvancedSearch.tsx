@@ -9,7 +9,11 @@ import {
   Box,
 } from '@mui/material';
 
-const AdvancedSearch = ({ onSearch }) => {
+interface AdvancedSearchProps {
+  onSearch: (query: string, mode?: string) => void;
+}
+
+const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onSearch }) => {
   const [brandName, setBrandName] = useState('');
   const [manufacturerName, setManufacturerName] = useState('');
   const [activeIngredient, setActiveIngredient] = useState('');
@@ -33,7 +37,7 @@ const AdvancedSearch = ({ onSearch }) => {
     onSearch(query, 'advanced');
   };
 
-  const handleKeyPress = (e) => {
+  const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
       handleSearch();
     }

@@ -7,7 +7,7 @@ import {
   Box,
   CircularProgress,
 } from '@mui/material';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import SimpleSearch from '../components/SimpleSearch';
 import AdvancedSearch from '../components/AdvancedSearch';
 import SearchResults from '../components/SearchResults';
@@ -44,7 +44,7 @@ const HomePage = () => {
     setQuery('');
   }, [location.search]);
 
-  const handleSearch = async (query, mode = 'simple') => {
+  const handleSearch = async (query: string, mode = 'simple') => {
     setLoading(true);
     sessionStorage.removeItem('searchResults');
     sessionStorage.removeItem('searchQuery');
@@ -61,7 +61,7 @@ const HomePage = () => {
 
       if (response.results && response.results.length > 0) {
         const filteredResults = response.results.filter(
-          (result) =>
+          (result: any) =>
             result.openfda.brand_name?.[0] || result.openfda.generic_name?.[0],
         );
         setResults(filteredResults);
@@ -149,7 +149,15 @@ const HomePage = () => {
             setQuery={setQuery}
           />
         )}
-        <Box mt={4} sx={{ bgcolor: 'background.default' }}>
+        <Box
+          mt={4}
+          sx={{
+            bgcolor: 'background.default',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 6,
+          }}
+        >
           {loading ? (
             <Box display="flex" alignItems="center">
               <CircularProgress />
