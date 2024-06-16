@@ -25,6 +25,16 @@ const HomePage = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const initialQuery = queryParams.get('query') || '';
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 100);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     const cachedResults = sessionStorage.getItem('searchResults');
@@ -86,43 +96,66 @@ const HomePage = () => {
   };
 
   return (
-    <Container>
-      <Typography variant="h1" gutterBottom>
-        Jaraxa FDA Search
-      </Typography>
-      <FormControlLabel
-        control={
-          <Switch checked={isAdvanced} onChange={handleToggleSearchMode} />
-        }
-        label="Advanced Search"
-      />
-      {isAdvanced ? (
-        <AdvancedSearch onSearch={handleSearch} />
-      ) : (
-        <SimpleSearch
-          onSearch={handleSearch}
-          initialQuery={initialQuery}
-          query={query}
-          setQuery={setQuery}
+    <>
+      <Box
+        sx={{
+          position: scrolled ? 'sticky' : 'static',
+          top: 0,
+          zIndex: 1100,
+          width: '100%',
+          backgroundColor: scrolled ? 'background.navbar' : 'transparent',
+          boxShadow: scrolled ? 1 : 0,
+          transition: 'all 0.3s ease-in-out',
+          py: scrolled ? 2 : 4,
+          textAlign: 'center',
+        }}
+      >
+        <Typography
+          variant="h1"
+          color="primary"
+          gutterBottom
+          sx={{
+            fontSize: { xs: '2rem', sm: '3rem', md: '4rem' },
+          }}
+        >
+          Jaraxa FDA Search
+        </Typography>
+      </Box>
+      <Container>
+        <FormControlLabel
+          control={
+            <Switch checked={isAdvanced} onChange={handleToggleSearchMode} />
+          }
+          label="Advanced Search"
         />
-      )}
-      <Box mt={4}>
-        {loading ? (
-          <Box display="flex" alignItems="center">
-            <CircularProgress />
-            <Box ml={2}>Loading...</Box>
-          </Box>
+        {isAdvanced ? (
+          <AdvancedSearch onSearch={handleSearch} />
         ) : (
-          <SearchResults
-            results={results}
+          <SimpleSearch
             onSearch={handleSearch}
-            spellingSuggestions={spellingSuggestions}
-            mode={isAdvanced ? 'advanced' : 'simple'}
+            initialQuery={initialQuery}
+            query={query}
+            setQuery={setQuery}
           />
         )}
-      </Box>
-      <ScrollToTopButton />
-    </Container>
+        <Box mt={4} sx={{ bgcolor: 'background.default' }}>
+          {loading ? (
+            <Box display="flex" alignItems="center">
+              <CircularProgress />
+              <Box ml={2}>Loading...</Box>
+            </Box>
+          ) : (
+            <SearchResults
+              results={results}
+              onSearch={handleSearch}
+              spellingSuggestions={spellingSuggestions}
+              mode={isAdvanced ? 'advanced' : 'simple'}
+            />
+          )}
+        </Box>
+        <ScrollToTopButton />
+      </Container>
+    </>
   );
 };
 

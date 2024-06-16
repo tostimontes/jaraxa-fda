@@ -157,7 +157,7 @@ const SearchResults = ({ results, spellingSuggestions, onSearch, mode }) => {
               <Typography variant="body1" color="textSecondary">
                 {result.openfda.generic_name?.[0]}
               </Typography>
-              <Typography variant="body1" color="green">
+              <Typography variant="body1" color="primary">
                 {result.openfda.manufacturer_name?.[0]}
               </Typography>
               <Typography variant="body2" color="textSecondary">
