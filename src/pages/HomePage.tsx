@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Container,
   Typography,
@@ -14,14 +14,14 @@ import SearchResults from '../components/SearchResults';
 import { fetchMedications } from '../api/fetchMedications';
 import { getSuggestionsFromRxNorm } from '../api/rxnormApi';
 import ScrollToTopButton from '../components/ScrollToTopButton';
+import { useToggle } from '../utils/ToggleContext';
 
 const HomePage = () => {
-  const [isAdvanced, setIsAdvanced] = useState(false);
+  const { isAdvanced, toggleAdvancedSearch } = useToggle();
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [query, setQuery] = useState('');
   const [spellingSuggestions, setSpellingSuggestions] = useState([]);
-  const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const initialQuery = queryParams.get('query') || '';
@@ -89,7 +89,7 @@ const HomePage = () => {
   };
 
   const handleToggleSearchMode = () => {
-    setIsAdvanced(!isAdvanced);
+    toggleAdvancedSearch();
     setResults([]);
     sessionStorage.removeItem('searchResults');
     sessionStorage.removeItem('searchQuery');
@@ -133,6 +133,7 @@ const HomePage = () => {
         }}
       >
         <FormControlLabel
+          id="advanced-toggle"
           control={
             <Switch checked={isAdvanced} onChange={handleToggleSearchMode} />
           }
@@ -150,10 +151,7 @@ const HomePage = () => {
         )}
         <Box mt={4} sx={{ bgcolor: 'background.default' }}>
           {loading ? (
-            <Box
-              display="flex"
-              alignItems="center"
-            >
+            <Box display="flex" alignItems="center">
               <CircularProgress />
               <Box ml={2}>Loading...</Box>
             </Box>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 
 const HistoryDropdown = ({ value, onChange, label, onKeyPress }) => {

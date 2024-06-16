@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import  { useState, useEffect } from 'react';
 import {
   Card,
   CardContent,
@@ -13,10 +13,9 @@ import {
   ListItem,
   ListItemText,
 } from '@mui/material';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const SearchResults = ({ results, spellingSuggestions, onSearch, mode }) => {
-  const location = useLocation();
   const [page, setPage] = useState(1);
   const [resultsPerPage, setResultsPerPage] = useState(10);
   const [sortOption, setSortOption] = useState('brand_name_asc');

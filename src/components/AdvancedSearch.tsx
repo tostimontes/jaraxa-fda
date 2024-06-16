@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   TextField,
   Button,
@@ -44,6 +44,7 @@ const AdvancedSearch = ({ onSearch }) => {
       component="form"
       noValidate
       autoComplete="off"
+      id="advanced-search-form"
       mb={2}
       sx={{
         display: 'flex',
@@ -116,5 +117,3 @@ const AdvancedSearch = ({ onSearch }) => {
 };
 
 export default AdvancedSearch;
-
-// TODO: no matches found trigger alternative suggestions

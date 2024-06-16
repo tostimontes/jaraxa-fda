@@ -7,13 +7,17 @@ import {
   IconButton,
   Container,
 } from '@mui/material';
+import 'driver.js/dist/driver.css';
+import { driverObj } from './utils/driverTour';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { lightTheme, darkTheme } from './styles/theme';
 import HomePage from './pages/HomePage';
 import DetailsPage from './pages/DetailsPage';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import Footer from './components/Footer';
+import { ToggleProvider, useToggle } from './utils/ToggleContext';
 
 const App = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -23,8 +27,26 @@ const App = () => {
   };
 
   return (
-    <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
-      <CssBaseline />
+    <ToggleProvider>
+      <ThemeProvider theme={isDarkMode ? lightTheme : darkTheme}>
+        <CssBaseline />
+        <AppContent toggleTheme={toggleTheme} isDarkMode={isDarkMode} />
+      </ThemeProvider>
+    </ToggleProvider>
+  );
+};
+
+const AppContent = ({ toggleTheme, isDarkMode }) => {
+  const { toggleAdvancedSearch, setAdvancedSearch, setSimpleSearch } =
+    useToggle();
+
+  const showTour = () => {
+    setSimpleSearch();
+    driverObj.drive();
+  };
+
+  return (
+    <>
       <Box
         sx={{
           position: 'fixed',
@@ -47,6 +69,21 @@ const App = () => {
           {isDarkMode ? <Brightness7Icon /> : <Brightness4Icon />}
         </IconButton>
       </Box>
+      <Button
+        variant="contained"
+        id="show-tour-button"
+        onClick={showTour}
+        sx={{
+          position: 'fixed',
+          aspectRatio: '1/1',
+          bottom: 16,
+          right: 16,
+          zIndex: 1300,
+          borderRadius: '50%',
+        }}
+      >
+        <HelpOutlineIcon />
+      </Button>
       <Router>
         <Container disableGutters sx={{ m: 0, p: 0 }}>
           <Routes>
@@ -57,7 +94,7 @@ const App = () => {
           <Footer />
         </Container>
       </Router>
-    </ThemeProvider>
+    </>
   );
 };
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   List,
   ListItem,
@@ -12,6 +12,7 @@ import { useDebounce } from 'use-debounce';
 import { useNavigate } from 'react-router-dom';
 import { fetchMedications } from '../api/fetchMedications';
 import { getSuggestionsFromRxNorm } from '../api/rxnormApi';
+import { useToggle } from '../utils/ToggleContext';
 import HistoryDropdown from './HistoryDropdown';
 
 const SimpleSearch = ({ onSearch, initialQuery, query, setQuery }) => {
@@ -110,7 +111,10 @@ const SimpleSearch = ({ onSearch, initialQuery, query, setQuery }) => {
 
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+      <div
+        style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}
+        id="search-medications"
+      >
         <HistoryDropdown
           value={query}
           onChange={handleInputChange}
