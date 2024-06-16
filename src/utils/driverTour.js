@@ -47,11 +47,11 @@ export const driverObj = driver({
           'Search by brand, manufacturer, or active ingredient, and filter by marketing status',
         side: 'bottom',
         align: 'start',
-        onPrevClick: (element, step, options) => {
+        onPrevClick: () => {
           window.setSimpleSearch();
           driverObj.movePrevious();
         },
-        onNextClick: (element, step, options) => {
+        onNextClick: () => {
           window.setSimpleSearch();
           driverObj.moveNext();
         },
@@ -64,6 +64,10 @@ export const driverObj = driver({
         description: 'Click the ? icon to show the site tour again!',
         side: 'top',
         align: 'start',
+        onPrevClick: () => {
+          window.setAdvancedSearch();
+          driverObj.movePrevious();
+        },
       },
     },
   ],

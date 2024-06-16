@@ -18,6 +18,7 @@ import Brightness4Icon from '@mui/icons-material/Brightness4';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import Footer from './components/Footer';
 import { ToggleProvider, useToggle } from './utils/ToggleContext';
+import useGlobalKeyPress from './utils/useGlobalKeyPress';
 
 interface AppContentProps {
   toggleTheme: () => void;
@@ -41,13 +42,14 @@ const App = () => {
 };
 
 const AppContent: React.FC<AppContentProps> = ({ toggleTheme, isDarkMode }) => {
-  const { setSimpleSearch } =
-    useToggle();
+  const { setSimpleSearch } = useToggle();
 
   const showTour = () => {
     setSimpleSearch();
     driverObj.drive();
   };
+
+  useGlobalKeyPress(toggleTheme, showTour);
 
   return (
     <>
@@ -69,6 +71,7 @@ const AppContent: React.FC<AppContentProps> = ({ toggleTheme, isDarkMode }) => {
               bgcolor: 'background.default',
             },
           }}
+          title="Toggle Light/Dark Mode (Ctrl + Space)"
         >
           {isDarkMode ? <Brightness7Icon /> : <Brightness4Icon />}
         </IconButton>
@@ -77,6 +80,7 @@ const AppContent: React.FC<AppContentProps> = ({ toggleTheme, isDarkMode }) => {
         variant="contained"
         id="show-tour-button"
         onClick={showTour}
+        title="Help (Alt + F1)"
         sx={{
           position: 'fixed',
           aspectRatio: '1/1',
